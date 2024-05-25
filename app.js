@@ -35,7 +35,7 @@ app.get("/users/:id", userController.getUser); // Get user by ID
 app.post("/users", userController.createUser); // Create a new user
 
 // Clothing item routes
-app.get("/clothingItems", clothingItemController.getClothingItems); // Get all clothing items
+app.get("/clothingItems/items", clothingItemController.getClothingItems); // Get all clothing items
 app.get("/clothingItems/:id", clothingItemController.getClothingItem); // Get clothing item by ID
 app.post("/items", clothingItemController.createClothingItem); // Create a new clothing item
 app.delete("/clothingItems/:id", clothingItemController.deleteClothingItem); // Delete a clothing item by ID

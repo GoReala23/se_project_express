@@ -5,7 +5,7 @@ const router = express.Router();
 const clothingItemController = require("../controllers/clothingItem");
 
 // Get /clothingItems - returns all clothingItems
-router.get("/", clothingItemController.getClothingItems);
+router.get("/items", clothingItemController.getClothingItems);
 
 router.get("/items/:id", clothingItemController.getClothingItem);
 
