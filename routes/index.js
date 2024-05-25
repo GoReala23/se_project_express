@@ -1,7 +1,7 @@
-cont router = require('express').Router();
+// const router = require("express").Router();
 
-const clothingItem = require('./clothingItem');
-const user = require('./user');
+// const clothingItem = require("./clothingItem");
+// const user = require("./users");
 
-router.use('/clothingItem', clothingItem);
-router.use('/user', user);
+// router.use("/clothingItem", clothingItem);
+// router.use("/user", user);
