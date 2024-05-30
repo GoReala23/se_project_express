@@ -1,7 +1,13 @@
-// const router = require("express").Router();
+const express = require("express");
 
-// const clothingItem = require("./clothingItem");
-// const user = require("./users");
+const clothingItem = require("./clothingItem");
+const user = require("./users");
+const likes = require("./likes");
 
-// router.use("/clothingItem", clothingItem);
-// router.use("/user", user);
+// Routes
+const router = express.Router();
+router.use("/items", clothingItem);
+router.use("/users", user);
+router.use("/items", likes);
+
+module.exports = router;

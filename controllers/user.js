@@ -8,15 +8,10 @@ const getUsers = async (req, res) => {
     const users = await User.find();
     res.status(200).json(users);
   } catch (error) {
-    if (error.name === "CastError") {
-      res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: "An error occured while fetching users " });
-    } else {
-      res.status(ERROR_CODES.SERVER_ERROR).send({
-        message: "An error occured while fetching users",
-      });
-    }
+    console.error(error);
+    res.status(ERROR_CODES.SERVER_ERROR).send({
+      message: "An error occurred while fetching users",
+    });
   }
 };
 
@@ -36,47 +31,56 @@ const getUser = async (req, res) => {
         .status(ERROR_CODES.INVALID_ID_ERROR)
         .send({ message: "Invalid user ID format" });
     }
-    return res.status(ERROR_CODES.SERVER_ERROR).send({ message: err.message });
-  }
-};
-// Controller function to create a new user
-// Create a new user
-const createUser = async (req, res) => {
-  const { name, avatar } = req.body;
-
-  try {
-    const newUser = new User({ name, avatar });
-    const savedUser = await newUser.save();
-    return res.status(201).json(savedUser);
-  } catch (err) {
-    if (!name || !avatar) {
-      return res
-        .status(ERROR_CODES.INVALID_DATA)
-        .json({ message: "You must include all required fields" });
-    }
-
-    if (name.length < 2) {
-      return res
-        .status(ERROR_CODES.INVALID_DATA)
-        .json({ message: "Name must be at least 2 characters long" });
-    }
-
-    if (name.length > 30) {
-      return res.status(ERROR_CODES.INVALID_DATA).json({
-        message: "Name must be less than or equal to 30 characters long",
-      });
-    }
-
-    if (!validator.isURL(avatar)) {
-      return res
-        .status(ERROR_CODES.INVALID_DATA)
-        .json({ message: "You must enter a valid URL" });
-    }
     console.error(err);
     return res
       .status(ERROR_CODES.SERVER_ERROR)
-      .json({ message: "An error occurred while creating the user" });
+      .send({ message: "Error while getting user" });
   }
+};
+
+const createUser = (req, res) => {
+  const { name, avatar } = req.body;
+
+  // Check if the name field is missing
+  if (!name) {
+    return res
+      .status(ERROR_CODES.USER_CREATION_ERROR)
+      .send({ message: "Name is required" });
+  }
+
+  // Check if the name length is less than 2 or greater than 30 characters
+  if (name.length < 2 || name.length > 30) {
+    return res
+      .status(ERROR_CODES.USER_CREATION_ERROR)
+      .send({ message: "Name must be between 2 and 30 characters long" });
+  }
+
+  // Check if the avatar field is missing
+  if (!avatar) {
+    return res
+      .status(ERROR_CODES.USER_CREATION_ERROR)
+      .send({ message: "Avatar is required" });
+  }
+
+  // Check if the avatar is a valid URL
+  if (!validator.isURL(avatar)) {
+    return res
+      .status(ERROR_CODES.USER_CREATION_ERROR)
+      .send({ message: "You must enter a valid URL" });
+  }
+
+  // Create the new user
+  const newUser = new User({ name, avatar });
+  newUser
+    .save()
+    .then((savedUser) => res.status(201).send(savedUser))
+    .catch((err) =>
+      res
+        .status(ERROR_CODES.SERVER_ERROR)
+        .send({ message: "An error occurred while creating the user", err })
+    );
+
+  return newUser;
 };
 
 module.exports = {
