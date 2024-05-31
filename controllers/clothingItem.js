@@ -131,7 +131,7 @@ const deleteClothingItem = (req, res) => {
       console.error(e);
       if (e.message === "ItemNotFound") {
         return res
-          .status(ERROR_CODES.INVALID_ID_ERROR)
+          .status(ERROR_CODES.RESOURCE_NOT_FOUND_ERROR)
           .send({ message: "Item not found" });
       }
       if (e.name === "CastError") {
