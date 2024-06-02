@@ -16,12 +16,10 @@ const createClothingItem = (req, res) => {
       if (err.name === "ValidationError") {
         return res.status(ERROR_CODES.USER_CREATION_ERROR).send({
           message: "Validation error",
-          details: err.errors,
         });
       }
       return res.status(ERROR_CODES.SERVER_ERROR).send({
         message: "An error occurred while creating the item",
-        err,
       });
     });
 };
@@ -53,7 +51,9 @@ const deleteClothingItem = (req, res) => {
     .catch((error) => {
       console.error(error);
       if (error.message === "ItemNotFound") {
-        return res.status(404).send({ message: "Item Not Found" }); // Adjusted to match the expected message
+        return res
+          .status(ERROR_CODES.RESOURCE_NOT_FOUND_ERROR)
+          .send({ message: "Item Not Found" }); // Adjusted to match the expected message
       }
       return res
         .status(ERROR_CODES.SERVER_ERROR)
