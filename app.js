@@ -29,11 +29,10 @@ app.use((req, res, next) => {
 app.use("/", routes);
 
 // Error-handling middleware for 404 Not Found
-app.use((req, res, next) => {
+app.use((req, res) => {
   res
     .status(ERROR_CODES.RESOURCE_NOT_FOUND_ERROR)
-    .send({ message: "Requested resource not found looking" });
-  next();
+    .send({ message: "Resource Not Found" });
 });
 
 // General error-handling middleware

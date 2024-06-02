@@ -2,8 +2,6 @@ const express = require("express");
 const {
   createClothingItem,
   getClothingItems,
-  getClothingItem,
-  updateClothingItem,
   deleteClothingItem,
 } = require("../controllers/clothingItem");
 
@@ -14,8 +12,7 @@ router.post("/", createClothingItem);
 
 // Other routes...
 router.get("/", getClothingItems);
-router.get("/:id", getClothingItem);
-router.put("/:id", updateClothingItem);
+
 router.delete("/:id", deleteClothingItem);
 
 module.exports = router;

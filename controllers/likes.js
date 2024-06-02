@@ -1,69 +1,65 @@
+const { default: mongoose } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
+
 const ERROR_CODES = require("../utils/errors");
 
-// Like an item
 const likeItem = (req, res) => {
   const { id } = req.params;
+  const userId = req.user._id; // Assuming you get the user ID from the authenticated user
 
-  ClothingItem.findByIdAndUpdate(
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(ERROR_CODES.INVALID_ID_ERROR)
+      .send({ message: "Invalid item ID format" });
+  }
+
+  return ClothingItem.findByIdAndUpdate(
     id,
-    {
-      $addToSet: { likedBy: req.user._id },
-      $inc: { likes: 1 },
-    },
+    { $addToSet: { likes: userId } },
     { new: true }
   )
-    .then((item) => {
-      if (!item) {
+    .orFail(() => new Error("ItemNotFound"))
+    .then((item) => res.status(200).send(item))
+    .catch((err) => {
+      console.error("Error occurred while liking the item:", err);
+      if (err.message === "ItemNotFound") {
         return res
           .status(ERROR_CODES.RESOURCE_NOT_FOUND_ERROR)
           .send({ message: "Item not found" });
       }
-      return res.status(200).send(item);
-    })
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "CastError") {
-        return res
-          .status(ERROR_CODES.INVALID_ID_ERROR)
-          .send({ message: "Invalid item ID format" });
-      }
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: "An error occurred while liking the item" });
+      return res.status(ERROR_CODES.SERVER_ERROR).send({
+        message: "An error occurred while updating the clothing item",
+      });
     });
 };
 
-// Unlike an item
 const unlikeItem = (req, res) => {
   const { id } = req.params;
+  const userId = req.user._id; // Assuming you get the user ID from the authenticated user
 
-  ClothingItem.findByIdAndUpdate(
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(ERROR_CODES.INVALID_ID_ERROR)
+      .send({ message: "Invalid item ID format" });
+  }
+
+  return ClothingItem.findByIdAndUpdate(
     id,
-    {
-      $pull: { likedBy: req.user._id },
-      $inc: { likes: -1 },
-    },
+    { $pull: { likes: userId } },
     { new: true }
   )
-    .then((item) => {
-      if (!item) {
+    .orFail(() => new Error("ItemNotFound"))
+    .then((item) => res.status(200).send(item))
+    .catch((err) => {
+      console.error("Error occurred while unliking the item:", err);
+      if (err.message === "ItemNotFound") {
         return res
           .status(ERROR_CODES.RESOURCE_NOT_FOUND_ERROR)
           .send({ message: "Item not found" });
       }
-      return res.status(200).send(item);
-    })
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "CastError") {
-        return res
-          .status(ERROR_CODES.INVALID_ID_ERROR)
-          .send({ message: "Invalid item ID format" });
-      }
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: "An error occurred while unliking the item" });
+      return res.status(ERROR_CODES.SERVER_ERROR).send({
+        message: "An error occurred while updating the clothing item",
+      });
     });
 };
 
