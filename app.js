@@ -1,7 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-
+const cors = require("cors");
+// const auth = require("./middleware/auth");
 const ERROR_CODES = require("./utils/errors");
 const routes = require("./routes");
 
@@ -19,13 +20,15 @@ mongoose
   })
   .catch(console.error);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "664bddad77cd2536c8bb6965",
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: "664bddad77cd2536c8bb6965",
+//   };
+//   next();
+// });
 
+app.use(cors());
+// app.use(auth);
 app.use("/", routes);
 
 // Error-handling middleware for 404 Not Found

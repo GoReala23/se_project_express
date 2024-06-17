@@ -39,26 +39,40 @@ const getClothingItems = (req, res) => {
 const deleteClothingItem = (req, res) => {
   const { id } = req.params;
 
+  // Case 2: Invalid item ID format
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
       .status(ERROR_CODES.INVALID_ID_ERROR)
       .send({ message: "Invalid item ID format" });
   }
 
-  return ClothingItem.findByIdAndDelete(id)
-    .orFail(new Error("ItemNotFound"))
-    .then(() => res.status(200).send({ message: "Item deleted successfully" }))
-    .catch((error) => {
-      console.error(error);
-      if (error.message === "ItemNotFound") {
-        return res
-          .status(ERROR_CODES.RESOURCE_NOT_FOUND_ERROR)
-          .send({ message: "Item Not Found" }); // Adjusted to match the expected message
-      }
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: "An error occurred while deleting the item" });
-    });
+  return (
+    ClothingItem.findById(id)
+      .then((item) => {
+        // Case 3: Item not found
+        if (!item) {
+          return res
+            .status(ERROR_CODES.RESOURCE_NOT_FOUND_ERROR)
+            .send({ message: "Item not found" });
+        }
+
+        // Case 4: Forbidden - user is not the owner
+        if (item.owner.toString() !== req.user._id) {
+          return res.status(403).send({ message: "Forbidden" });
+        }
+
+        // Case 1: Valid deletion
+        return ClothingItem.findByIdAndRemove(id).then(() =>
+          res.send({ message: "Item deleted" })
+        );
+      })
+      // Case 5: Server error
+      .catch((err) =>
+        res
+          .status(ERROR_CODES.SERVER_ERROR)
+          .send({ message: "An error occurred while deleting the item", err })
+      )
+  );
 };
 
 module.exports = {
