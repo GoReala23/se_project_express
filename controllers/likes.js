@@ -9,7 +9,7 @@ const likeItem = (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
-      .status(ERROR_CODES.INVALID_ID_ERROR)
+      .status(ERROR_CODES.BAD_REQUEST)
       .send({ message: "Invalid item ID format" });
   }
 
@@ -39,7 +39,7 @@ const unlikeItem = (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
-      .status(ERROR_CODES.INVALID_ID_ERROR)
+      .status(ERROR_CODES.BAD_REQUEST)
       .send({ message: "Invalid item ID format" });
   }
 

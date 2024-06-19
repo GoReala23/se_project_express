@@ -14,7 +14,7 @@ const createClothingItem = (req, res) => {
       console.error("Error occurred while creating the clothing item:", err);
 
       if (err.name === "ValidationError") {
-        return res.status(ERROR_CODES.USER_CREATION_ERROR).send({
+        return res.status(ERROR_CODES.BAD_REQUEST).send({
           message: "Validation error",
         });
       }
@@ -42,7 +42,7 @@ const deleteClothingItem = (req, res) => {
   // Case 2: Invalid item ID format
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
-      .status(ERROR_CODES.INVALID_ID_ERROR)
+      .status(ERROR_CODES.BAD_REQUEST)
       .send({ message: "Invalid item ID format" });
   }
 
@@ -58,7 +58,9 @@ const deleteClothingItem = (req, res) => {
 
         // Case 4: Forbidden - user is not the owner
         if (item.owner.toString() !== req.user._id) {
-          return res.status(403).send({ message: "Forbidden" });
+          return res
+            .status(ERROR_CODES.FORBIDDEN)
+            .send({ message: "Forbidden" });
         }
 
         // Case 1: Valid deletion
@@ -67,10 +69,10 @@ const deleteClothingItem = (req, res) => {
         );
       })
       // Case 5: Server error
-      .catch((err) =>
+      .catch(() =>
         res
           .status(ERROR_CODES.SERVER_ERROR)
-          .send({ message: "An error occurred while deleting the item", err })
+          .send({ message: "An error occurred while deleting the item" })
       )
   );
 };
