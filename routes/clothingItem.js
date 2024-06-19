@@ -8,13 +8,14 @@ const auth = require("../middleware/auth");
 
 const router = express.Router();
 
+router.get("/", getClothingItems);
+
 router.use(auth);
 
 // POST /items - creates a new clothing item
 router.post("/", createClothingItem);
 
 // Other routes...
-router.get("/", getClothingItems);
 
 router.delete("/:id", deleteClothingItem);
 
