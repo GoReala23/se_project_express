@@ -3,6 +3,7 @@ const { JWT_SECRET } = require("../utils/config");
 const ERROR_CODES = require("../utils/errors");
 
 // Middleware to authenticate the JWT token and set the user in the request object
+
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
@@ -24,5 +25,7 @@ const auth = (req, res, next) => {
       .send({ message: "Authorization required" });
   }
 };
+
+module.exports = auth;
 
 module.exports = auth;

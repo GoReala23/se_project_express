@@ -1,82 +1,98 @@
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
+const validator = require("validator");
 const ClothingItem = require("../models/clothingItem");
+const DefaultClothingItems = require("../utils/const/defaultItems");
 const ERROR_CODES = require("../utils/errors");
 
-// Create a new clothing item
-const createClothingItem = (req, res) => {
+const createClothingItem = async (req, res) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
-  // Create the clothing item
-  return ClothingItem.create({ name, weather, imageUrl, owner })
-    .then((item) => res.status(201).send(item))
-    .catch((err) => {
-      console.error("Error occurred while creating the clothing item:", err);
-
-      if (err.name === "ValidationError") {
-        return res.status(ERROR_CODES.BAD_REQUEST).send({
-          message: "Validation error",
-        });
-      }
-      return res.status(ERROR_CODES.SERVER_ERROR).send({
-        message: "An error occurred while creating the item",
+  try {
+    if (!validator.isURL(imageUrl)) {
+      return res.status(ERROR_CODES.BAD_REQUEST).json({
+        message: "Invalid URL. Please use a valid URL instead of a link.",
       });
+    }
+
+    const item = await ClothingItem.create({ name, weather, imageUrl, owner });
+    return res.status(201).json(item);
+  } catch (err) {
+    console.error("Error creating item:", err);
+    if (err.name === "ValidationError") {
+      return res.status(ERROR_CODES.BAD_REQUEST).json({
+        message: "Validation error",
+      });
+    }
+    return res.status(ERROR_CODES.SERVER_ERROR).json({
+      message: "An error occurred while creating the item",
     });
+  }
+};
+const getClothingItems = async (req, res) => {
+  console.log("Get clothing items request received");
+
+  try {
+    // Fetch all clothing items from the database
+    const items = await ClothingItem.find({});
+    // Combine default items with items from the database
+    const allItems = [...DefaultClothingItems, ...items];
+    console.log("Clothing items retrieved:", allItems);
+    res.status(200).json({ items: allItems });
+  } catch (err) {
+    console.error("Error occurred while getting the clothing items:", err);
+    // Handle server error
+    res.status(ERROR_CODES.SERVER_ERROR).json({
+      message: "An error occurred while getting the clothing items",
+    });
+  }
 };
 
-// Get all clothing items
-const getClothingItems = (req, res) => {
-  ClothingItem.find({})
-    .then((items) => res.status(200).send({ items }))
-    .catch((err) => {
-      console.log(err);
-      res.status(ERROR_CODES.SERVER_ERROR).json({
-        message: "An error occurred while getting the clothing items",
-      });
-    });
-};
-
-const deleteClothingItem = (req, res) => {
+// Controller function to delete a clothing item
+const deleteClothingItem = async (req, res) => {
   const { id } = req.params;
 
-  // Case 2: Invalid item ID format
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res
-      .status(ERROR_CODES.BAD_REQUEST)
-      .send({ message: "Invalid item ID format" });
+  console.log(`Delete request received for item ID: ${id}`);
+
+  // Check if the item is a default item
+  const isDefaultItem = DefaultClothingItems.some((item) => item._id === id);
+
+  // Validate item ID format if it's not a default item
+  if (!isDefaultItem && !mongoose.Types.ObjectId.isValid(id)) {
+    console.log("Invalid item ID format");
+    return res.status(400).json({ message: "Invalid item ID format" });
   }
 
-  return (
-    ClothingItem.findById(id)
-      .then((item) => {
-        // Case 3: Item not found
-        if (!item) {
-          return res
-            .status(ERROR_CODES.RESOURCE_NOT_FOUND_ERROR)
-            .send({ message: "Item not found" });
-        }
+  try {
+    if (isDefaultItem) {
+      console.log("Default item deleted successfully");
+      return res.json({ message: "Default item deleted" });
+    }
 
-        // Case 4: Forbidden - user is not the owner
-        if (item.owner.toString() !== req.user._id) {
-          return res
-            .status(ERROR_CODES.FORBIDDEN)
-            .send({ message: "Forbidden" });
-        }
+    // Find the item by ID
+    const item = await ClothingItem.findById(id);
+    if (!item) {
+      console.log("Item not found in the database");
+      return res.status(404).json({ message: "Item not found" });
+    }
 
-        // Case 1: Valid deletion
-        return ClothingItem.findByIdAndRemove(id).then(() =>
-          res.send({ message: "Item deleted" })
-        );
-      })
-      // Case 5: Server error
-      .catch(() =>
-        res
-          .status(ERROR_CODES.SERVER_ERROR)
-          .send({ message: "An error occurred while deleting the item" })
-      )
-  );
+    // Check if the current user is the owner of the item
+    if (item.owner.toString() !== req.user._id) {
+      console.log("User is not authorized to delete this item");
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    // Remove the item from the database
+    await ClothingItem.findByIdAndRemove(id);
+    console.log("Item deleted successfully");
+    return res.json({ message: "Item deleted" });
+  } catch (err) {
+    console.error("Error occurred while deleting the item:", err);
+    return res.status(500).json({
+      message: "An error occurred while deleting the item",
+    });
+  }
 };
-
 module.exports = {
   createClothingItem,
   getClothingItems,
