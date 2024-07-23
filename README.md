@@ -1,6 +1,6 @@
 # WTWR (What to Wear?): Back End
 
-The WTWR back-end project is focused on creating a server for the WTWR application. This project involves working with databases, setting up security and testing, and deploying web applications on a remote machine. The goal is to create a server with an API and user authorization.authorization.
+The WTWR back-end project is focused on creating a server for the WTWR application. This project involves working with databases, setting up security and testing, and deploying web applications on a remote machine. The goal is to create a server with an API and user authorization.
 
 ## Project Description
 
@@ -21,18 +21,50 @@ The WTWR back-end project is focused on creating a server for the WTWR applicati
 - Nodemon: Tool for automatically restarting the server during development.
 - cors: Package to allow/disable Cross-Origin Resource Sharing (CORS).
 
-# Functionality
+## Functionality
 
-User Authentication: Users can sign up and log in. Passwords are securely hashed, and JSON Web Tokens (JWT) are used for session management.
-User Management: Users can update their profile information and view their own data.
-Clothing Items Management: Users can add, view, and delete clothing items. Users can also like
+- User Authentication: Users can sign up and log in. Passwords are securely hashed, and JSON Web Tokens (JWT) are used for session management.
+- User Management: Users can update their profile information and view their own data.
+- Clothing Items Management: Users can add, view, and delete clothing items. Users can also like or unlike clothing items.
 
 ## Running the Project
 
-`npm run start` — to launch the server
+### Prerequisites
 
-`npm run dev` — to launch the server with the hot reload feature
+- Make sure you have [Node.js](https://nodejs.org/) and [MongoDB](https://www.mongodb.com/) installed on your machine.
 
-### Testing
+### Backend Repository
 
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+You can find the backend repository here: [Backend Repository](https://github.com/GoReala23/se_project_express)
+
+### How to Run the Backend
+
+1. **Clone the backend repository:**
+
+   git clone https://github.com/GoReala23/se_project_express.git
+
+2. **Navigate to the project directory:**
+   cd se_project_express
+
+3 **Install the dependencies:**
+npm install
+
+4 **Set up environment variables:**
+
+- Create a .env file in the root of the project.
+- Add the necessary environment variables (e.g., database connection string).
+
+env
+
+MONGO_URI=your-mongodb-connection-string
+PORT=5000
+JWT_SECRET=your-jwt-secret
+
+5 **Start the backend server:**
+
+npm run start
+The server should be running on http://localhost:5000
+
+npm run dev
+Testing
+Before committing your code, make sure you edit the file sprint.txt in the root folder. The file sprint.txt should contain the number of the sprint you're currently working on. For example: 12
