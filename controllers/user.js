@@ -65,7 +65,7 @@ const login = async (req, res) => {
     // Generate and send JWT token
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
 
-    return res.send({ token });
+    return res.send({ token, user });
   } catch (err) {
     console.error("Login error:", err);
     if (err.message === "Incorrect email or password") {
