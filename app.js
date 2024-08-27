@@ -1,8 +1,13 @@
+require("dotenv").config();
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const { errors } = require("celebrate");
 const routes = require("./routes/index");
+const errorHandler = require("./middlewares/errorHandler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
 
@@ -15,6 +20,12 @@ mongoose.connect("mongodb://localhost:27017/wtwr_db", {
   useUnifiedTopology: true,
 });
 
+app.use(requestLogger);
+
+app.get("/", (req, res) => {
+  res.send("Welcome to What2Wear API");
+});
+
 app.use("/", routes);
 
 // Error-handling middleware for 404 Not Found
@@ -22,7 +33,15 @@ app.use((req, res) => {
   res.status(404).send({ message: "Resource Not Found" });
 });
 
-// Start server
-app.listen(3001, () => {
+app.use(errorLogger);
+
+app.use(errors());
+
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3001;
+
+// Start serverpm2 loo
+app.listen(PORT, () => {
   console.log("Server is running on port 3001");
 });
