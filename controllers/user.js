@@ -153,6 +153,7 @@ const createUser = async (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   try {
+    console.log("Received avatar Url:", avatar);
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       throw new ConflictError("User with this email already exists");
@@ -167,6 +168,7 @@ const createUser = async (req, res, next) => {
       email: user.email,
     });
   } catch (err) {
+    console.error("Error creating user:", err.stack);
     if (err.name === "ValidationError") {
       next(new BadRequestError("Validation error"));
     } else {
