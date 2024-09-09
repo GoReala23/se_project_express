@@ -149,11 +149,45 @@ const NotFoundError = require("../errors/NotFoundError");
 const ServerError = require("../errors/ServerError");
 
 // Controller function to create a new user
+// user.js
+// const createUser = async (req, res, next) => {
+//   const { name, avatar, email, password } = req.body;
+
+//   try {
+//     console.log("Received user data:", { name, avatar, email, password }); // Log incoming data
+
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       throw new ConflictError("User with this email already exists");
+//     }
+
+//     const hash = await bcrypt.hash(password, 10);
+//     const user = await User.create({ name, avatar, email, password: hash });
+
+//     console.log("User created successfully:", user); // Log successful creation
+
+//     return res.status(201).send({
+//       name: user.name,
+//       avatar: user.avatar,
+//       email: user.email,
+//     });
+//   } catch (err) {
+//     console.error("Error creating user:", err.stack); // Log the error stack trace
+//     if (err.name === "ValidationError") {
+//       next(new BadRequestError(`Validation error: ${err.message}`)); // Proper string interpolation
+//     } else {
+//       next(new ServerError("An error occurred while creating the user"));
+//     }
+//   }
+//   return null; // Ensure compliance with ESLint or other linters
+// };
+
 const createUser = async (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   try {
-    console.log("Received avatar Url:", avatar);
+    console.log("Received user data:", { name, avatar, email, password });
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       throw new ConflictError("User with this email already exists");
@@ -162,22 +196,28 @@ const createUser = async (req, res, next) => {
     const hash = await bcrypt.hash(password, 10);
     const user = await User.create({ name, avatar, email, password: hash });
 
+    console.log("User created successfully:", user);
+
     return res.status(201).send({
       name: user.name,
       avatar: user.avatar,
       email: user.email,
     });
   } catch (err) {
-    console.error("Error creating user:", err.stack);
+    console.error("Error creating user:", err); // Log the full error object
+
     if (err.name === "ValidationError") {
-      next(new BadRequestError("Validation error"));
+      console.error("Validation error details:", err.errors); // Log validation errors
+      return res.status(400).send({
+        message: "Validation error",
+        details: err.errors, // Send detailed error to the client
+      });
     } else {
-      next(new ServerError("An error occurred while creating the user"));
+      return res.status(500).send({
+        message: "An error occurred while creating the user",
+      });
     }
   }
-
-  // Explicit return to satisfy ESLint
-  return null;
 };
 
 // Controller function for user login
