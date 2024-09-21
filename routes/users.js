@@ -1,5 +1,5 @@
 const express = require("express");
-const { validateUser } = require("../middlewares/validation");
+const { validateUserProfileUpdate } = require("../middlewares/validation");
 const { getCurrentUser, updateUser } = require("../controllers/user");
 const auth = require("../middlewares/auth");
 
@@ -12,6 +12,6 @@ router.use(auth);
 router.get("/me", getCurrentUser);
 
 // Route to update the current user's information
-router.patch("/me", validateUser, updateUser);
+router.patch("/me", validateUserProfileUpdate, updateUser);
 
 module.exports = router;

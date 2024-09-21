@@ -152,7 +152,7 @@ const ServerError = require("../errors/ServerError");
 
 const createUser = async (req, res, next) => {
   const { name, avatar, email, password } = req.body;
-
+  console.log("Received user data:", { name, avatar, email, password });
   try {
     console.log("Received user data:", { name, avatar, email, password });
 
