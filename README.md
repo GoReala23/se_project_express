@@ -68,3 +68,8 @@ The server should be running on http://localhost:5000
 npm run dev
 Testing
 Before committing your code, make sure you edit the file sprint.txt in the root folder. The file sprint.txt should contain the number of the sprint you're currently working on. For example: 12
+
+## Access Information
+
+- Backend Domain: https://api.what2wear.strangled.net
+- Frontend Domain: https://what2wear.strangled.net
