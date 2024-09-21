@@ -1,13 +1,14 @@
 {
   "name": "se_project_express",
   "version": "1.0.0",
-  "description": "(backend devlopment)",
+  "description": "(backend development)",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint .",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "deploy": "scp -r ./* --exclude=node_modules --exclude=.git porterh1991@what2wear.strangled.net:/home/porterh1991/backend"
   },
   "author": "Hassan Porter",
   "license": "ISC",

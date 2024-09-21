@@ -26,7 +26,6 @@ module.exports.validateUser = celebrate({
   }),
 });
 
-// Validation for creating a clothing item
 module.exports.validateClothingItem = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30).messages({
@@ -37,6 +36,10 @@ module.exports.validateClothingItem = celebrate({
     imageUrl: Joi.string().required().custom(validateURL).messages({
       "string.empty": 'The "imageUrl" field must be filled in',
       "string.uri": 'The "imageUrl" field must be a valid URL',
+    }),
+    weather: Joi.string().required().valid("hot", "cold", "warm").messages({
+      "any.only": 'The "weather" field must be one of [hot, cold, warm]',
+      "string.empty": 'The "weather" field must be filled in',
     }),
   }),
 });
@@ -62,7 +65,7 @@ module.exports.validateUser = celebrate({
   }),
 });
 
-// Validation for updating a user profile (Profile Edit)
+// Validation for updating a user profile
 module.exports.validateUserProfileUpdate = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).messages({
