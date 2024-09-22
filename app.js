@@ -8,6 +8,7 @@ const { errors } = require("celebrate");
 const routes = require("./routes/index");
 const errorHandler = require("./middlewares/errorHandler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const NotFoundError = require("./errors/NotFoundError");
 
 const app = express();
 
@@ -35,8 +36,8 @@ app.get("/", (req, res) => {
 app.use("/", routes);
 
 // Error-handling middleware for 404 Not Found
-app.use((req, res) => {
-  res.status(404).send({ message: "Resource Not Found" });
+app.use((req, res, next) => {
+  next(new NotFoundError("Resource Not found"));
 });
 
 app.use(errorLogger);
