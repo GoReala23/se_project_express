@@ -1,6 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
 const NotFoundError = require("../errors/NotFoundError");
-const ServerError = require("../errors/ServerError");
+// const ServerError = require("../errors/ServerError");
 
 // Add like to a clothing item
 const likeItem = async (req, res, next) => {
@@ -24,7 +24,7 @@ const likeItem = async (req, res, next) => {
     return res.send(item);
   } catch (err) {
     // Centralized error handling
-    return next(new ServerError("An error occurred while liking the item"));
+    return next(err);
   }
 };
 
@@ -51,7 +51,7 @@ const unlikeItem = async (req, res, next) => {
     return res.send(item);
   } catch (err) {
     // Centralized error handling
-    return next(new ServerError("An error occurred while unliking the item"));
+    return next(err);
   }
 };
 

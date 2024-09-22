@@ -18,7 +18,7 @@ const createUser = async (req, res, next) => {
     // Check if a user with the provided email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      throw new ConflictError("User with this email already exists");
+      return next(new ConflictError("User already exists"));
     }
 
     // Hash the password
@@ -59,7 +59,6 @@ const login = async (req, res, next) => {
 
     return res.send({
       token,
-      // Ensure only necessary user data is returned
     });
   } catch (err) {
     if (err.message === "Incorrect email or password") {
@@ -74,12 +73,12 @@ const getCurrentUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id).select("-password"); // Exclude password
     if (!user) {
-      throw new NotFoundError("User not found");
+      return next(new NotFoundError("User not found"));
     }
 
     return res.status(200).send(user);
   } catch (err) {
-    return next(new ServerError("An error occurred while fetching user data"));
+    return next(err);
   }
 };
 
@@ -94,7 +93,7 @@ const updateUser = async (req, res, next) => {
       { new: true, runValidators: true }
     );
     if (!user) {
-      throw new NotFoundError("User not found");
+      return next(new NotFoundError("User not found"));
     }
 
     return res.status(200).send(user);
@@ -102,7 +101,7 @@ const updateUser = async (req, res, next) => {
     if (err.name === "ValidationError") {
       return next(new BadRequestError("Validation error"));
     }
-    return next(new ServerError("An error occurred while updating user data"));
+    return next(err);
   }
 };
 
